@@ -16,6 +16,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { DictionaryEntry } from '../types';
 
 interface ExampleItem {
@@ -174,8 +175,23 @@ export const VocabularyCardBody: React.FC<VocabularyCardBodyProps> = ({
                     onClick={onToggleHideWord}
                     color={hideWordInSentence ? 'secondary' : 'default'}
                     aria-label={hideWordInSentence ? "Mostrar palabra oculta" : "Ocultar palabra para practicar"}
+                    sx={{
+                      transition: 'all 0.2s ease',
+                      bgcolor: hideWordInSentence ? 'rgba(0, 107, 95, 0.12)' : 'transparent',
+                    }}
                   >
-                    {hideWordInSentence ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.span
+                        key={hideWordInSentence ? 'eye-off' : 'eye-on'}
+                        initial={{ scale: 0.7, rotate: -25, opacity: 0 }}
+                        animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                        exit={{ scale: 0.7, rotate: 25, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        style={{ display: 'inline-flex' }}
+                      >
+                        {hideWordInSentence ? <VisibilityOffIcon fontSize="small" /> : <VisibilityIcon fontSize="small" />}
+                      </motion.span>
+                    </AnimatePresence>
                   </IconButton>
                 </Tooltip>
               </Box>

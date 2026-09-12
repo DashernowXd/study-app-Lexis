@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
-import { Box, Tooltip } from '@mui/material';
 import type { SxProps, Theme } from '@mui/material';
 import type { ExampleItem } from '../hooks/useWordExamples';
+import { AnimatedSentenceWord } from '../components/AnimatedSentenceWord';
 
 export function useSentenceTokens(
   activeExample: ExampleItem | undefined,
   targetWord: string,
   hideWordInSentence: boolean,
-  hiddenBlankStyle: SxProps<Theme>,
-  wordHighlightStyle: SxProps<Theme>,
+  _hiddenBlankStyle: SxProps<Theme>,
+  _wordHighlightStyle: SxProps<Theme>,
   onRevealWord: () => void
 ) {
   return useMemo(() => {
@@ -32,26 +32,16 @@ export function useSentenceTokens(
 
     return tokens.map(token => {
       if (token.isMatch) {
-        if (hideWordInSentence) {
-          return (
-            <Tooltip key={token.id} title="Click to reveal hidden word">
-              <Box
-                component="span"
-                sx={hiddenBlankStyle}
-                onClick={onRevealWord}
-              >
-                [ {token.text} ]
-              </Box>
-            </Tooltip>
-          );
-        }
         return (
-          <Box key={token.id} component="span" sx={wordHighlightStyle}>
-            {token.text}
-          </Box>
+          <AnimatedSentenceWord
+            key={token.id}
+            text={token.text}
+            isHidden={hideWordInSentence}
+            onReveal={onRevealWord}
+          />
         );
       }
       return <span key={token.id}>{token.text}</span>;
     });
-  }, [activeExample, targetWord, hideWordInSentence, hiddenBlankStyle, wordHighlightStyle, onRevealWord]);
+  }, [activeExample, targetWord, hideWordInSentence, onRevealWord]);
 }
