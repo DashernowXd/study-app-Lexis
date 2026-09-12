@@ -17,7 +17,11 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import { motion } from 'framer-motion';
+import { playQuizSound } from '../utils/quizAudio';
 import type { QuizQuestion } from '../types';
+
+const MotionPaper = motion.create(Paper);
 
 interface QuizQuestionViewProps {
   currentQ: QuizQuestion;
@@ -163,11 +167,32 @@ export const QuizQuestionView: React.FC<QuizQuestionViewProps> = ({
             bgcolor = '#f0f4ff';
           }
 
+          const isWrongChoice = showResult && isSelected && !opt.isCorrect;
+          const isCorrectChoice = showResult && (isSelected || opt.isCorrect) && opt.isCorrect;
+
           return (
-            <Paper
+            <MotionPaper
               key={opt.key}
               elevation={0}
-              onClick={() => onSelectOption(opt.key, opt.isCorrect)}
+              onClick={() => {
+                if (!hasAnswered) {
+                  playQuizSound(opt.isCorrect ? 'success' : 'error');
+                  onSelectOption(opt.key, opt.isCorrect);
+                }
+              }}
+              animate={
+                isWrongChoice
+                  ? { x: [0, -12, 12, -9, 9, -5, 5, 0] }
+                  : isCorrectChoice
+                    ? { scale: [1, 1.025, 1] }
+                    : { x: 0, scale: 1 }
+              }
+              transition={{
+                duration: isWrongChoice ? 0.42 : 0.28,
+                ease: 'easeInOut'
+              }}
+              whileHover={!hasAnswered ? { scale: 1.01 } : undefined}
+              whileTap={!hasAnswered ? { scale: 0.99 } : undefined}
               sx={{
                 p: 2,
                 borderRadius: 2.5,
@@ -175,7 +200,7 @@ export const QuizQuestionView: React.FC<QuizQuestionViewProps> = ({
                 borderColor,
                 bgcolor,
                 cursor: hasAnswered ? 'default' : 'pointer',
-                transition: 'all 0.15s ease',
+                transition: 'border-color 0.15s ease, background-color 0.15s ease',
                 '&:hover': {
                   borderColor: hasAnswered ? borderColor : '#142175',
                   bgcolor: hasAnswered ? bgcolor : '#f8f9ff'
@@ -229,7 +254,7 @@ export const QuizQuestionView: React.FC<QuizQuestionViewProps> = ({
                   )}
                 </Box>
               </Box>
-            </Paper>
+            </MotionPaper>
           );
         })}
       </Box>

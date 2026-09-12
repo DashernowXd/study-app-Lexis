@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, Alert, Paper, Chip } from '@mui/material';
 import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
+import { motion } from 'framer-motion';
+import { playQuizSound } from '../../../quiz-session/utils/quizAudio';
 import type { ExerciseData } from '../../types';
 
 interface Props {
@@ -9,10 +11,13 @@ interface Props {
   onComplete: () => void;
 }
 
+const MotionPaper = motion.create(Paper);
+
 export const ErrorDetectionExercise: React.FC<Props> = ({ data, onComplete }) => {
   const items = data.errorItems || [];
   const [userInputs, setUserInputs] = useState<Record<string, string>>({});
   const [checked, setChecked] = useState(false);
+  const [attemptKey, setAttemptKey] = useState(0);
 
   const handleInputChange = (id: string, val: string) => {
     setUserInputs(prev => ({ ...prev, [id]: val }));
@@ -20,6 +25,15 @@ export const ErrorDetectionExercise: React.FC<Props> = ({ data, onComplete }) =>
 
   const handleCheck = () => {
     setChecked(true);
+    setAttemptKey(k => k + 1);
+
+    const hasAnyError = items.some(item => {
+      const userVal = (userInputs[item.id] || '').trim().toLowerCase();
+      const expected = item.correctAnswer.trim().toLowerCase();
+      return !(userVal === expected || (item.errorWord && userInputs[item.id]?.toLowerCase().includes(expected)));
+    });
+
+    playQuizSound(hasAnyError ? 'error' : 'success');
   };
 
   return (
@@ -38,16 +52,31 @@ export const ErrorDetectionExercise: React.FC<Props> = ({ data, onComplete }) =>
         const expected = item.correctAnswer.trim().toLowerCase();
         const isMatch = checked && (userVal === expected || (item.errorWord && userInputs[item.id]?.toLowerCase().includes(expected)));
 
+        const hasError = checked && !isMatch;
+
         return (
-          <Paper
-            key={item.id}
+          <MotionPaper
+            key={`error-item-${item.id}-${attemptKey}`}
             elevation={0}
+            initial={{ x: 0, scale: 1 }}
+            animate={
+              checked
+                ? hasError
+                  ? { x: [0, -11, 11, -8, 8, -4, 4, 0] }
+                  : { scale: [1, 1.02, 1] }
+                : { x: 0, scale: 1 }
+            }
+            transition={{
+              duration: hasError ? 0.42 : 0.28,
+              ease: 'easeInOut'
+            }}
             sx={{
               p: 2.5,
               borderRadius: '12px',
               border: '1px solid',
               borderColor: checked ? (isMatch ? 'success.light' : 'warning.light') : 'divider',
               bgcolor: checked ? (isMatch ? 'rgba(46, 125, 50, 0.04)' : 'rgba(237, 108, 2, 0.04)') : 'background.paper',
+              transition: 'border-color 0.2s ease, background-color 0.2s ease',
             }}
           >
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
@@ -94,7 +123,7 @@ export const ErrorDetectionExercise: React.FC<Props> = ({ data, onComplete }) =>
                 </Typography>
               </Alert>
             )}
-          </Paper>
+          </MotionPaper>
         );
       })}
 
