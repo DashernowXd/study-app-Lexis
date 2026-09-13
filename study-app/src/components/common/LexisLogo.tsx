@@ -2,6 +2,8 @@ import React from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import type { SxProps, Theme } from '@mui/material';
 
+import logoImg from '@/assets/logo.jpg';
+
 export interface LexisLogoProps {
   /** Size in pixels of the emblem (default: 36) */
   size?: number;
@@ -43,7 +45,7 @@ export const LexisLogo: React.FC<LexisLogoProps> = ({
     >
       <Box
         component="img"
-        src="/logo.jpg"
+        src={logoImg}
         alt={alt}
         loading="eager"
         decoding="async"

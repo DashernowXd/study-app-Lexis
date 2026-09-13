@@ -23,6 +23,7 @@ import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 import type { AppView } from './MainLayout';
 import type { EnglishLevel } from '../../features/study-plan/types';
+import logoImg from '@/assets/logo.jpg';
 
 interface NavigationDrawerContentProps {
   currentView: AppView;
@@ -56,7 +57,7 @@ export const NavigationDrawerContent: React.FC<NavigationDrawerContentProps> = (
       >
         <Box
           component="img"
-          src="/logo.jpg"
+          src={logoImg}
           alt="Lexis Logo"
           sx={{
             width: 44,

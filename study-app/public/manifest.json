@@ -4,17 +4,17 @@
   "description": "Plataforma ejecutiva de dominio de inglés avanzado (B1, B2, C1) con pedagogía C.A.R.E., estudios de lectura, expresión oral, redacción y simuladores.",
   "icons": [
     {
-      "src": "/favicon.png",
+      "src": "favicon.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/logo.jpg",
+      "src": "logo.jpg",
       "type": "image/jpeg",
       "sizes": "512x512"
     }
   ],
-  "start_url": "/",
+  "start_url": "./",
   "background_color": "#f8f9ff",
   "theme_color": "#006b5f",
   "display": "standalone",
